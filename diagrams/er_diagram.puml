@@ -37,7 +37,6 @@ package "Device Service" {
     + id : UUID <<PK>>
     --
     device_type_id : UUID <<FK>>
-    user_id : UUID <<FK>>
     name : VARCHAR(100)
     serial_number : VARCHAR(100) <<UK>>
     status : ENUM('online', 'offline', 'error')
@@ -55,8 +54,20 @@ package "Device Service" {
     created_at : TIMESTAMP
   }
 
+  entity "user_devices" {
+    + id : UUID <<PK>>
+    --
+    user_id : UUID <<FK>>
+    device_id : UUID <<FK>>
+    role : ENUM('owner', 'member')
+    granted_at : TIMESTAMP
+    granted_by : UUID <<FK>>
+  }
+
   device_types ||--o{ devices : "type_of"
   devices ||--o{ device_tokens : "authenticates_with"
+  users ||--o{ user_devices : "has_access"
+  devices ||--o{ user_devices : "accessible_by"
 }
 
 package "Device Manager Service" {
@@ -122,13 +133,13 @@ package "Telemetry Service" {
     acknowledged_at : TIMESTAMP
   }
 
-  telemetry_data }o--|| telemetry_alerts : "may_trigger"
+  telemetry }o--|| telemetry_alerts : "may_trigger"
 }
+
 ' 1 to many
-users ||--o{ devices : "owns"
 users ||--o{ scenarios : "creates"
 ' many to many
-devices }o--o{ telemetry_data : "produces"
+devices }o--o{ telemetry : "produces"
 devices }o--o{ scenario_actions : "controlled_by"
 
 @enduml
