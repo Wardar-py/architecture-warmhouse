@@ -59,8 +59,6 @@
 
 # Задание 2. Проектирование микросервисной архитектуры
 
-В этом задании вам нужно предоставить только диаграммы в модели C4. Мы не просим вас отдельно описывать получившиеся микросервисы и то, как вы определили взаимодействия между компонентами To-Be системы. Если вы правильно подготовите диаграммы C4, они и так это покажут.
-
 **Диаграмма контейнеров (Containers)**
 
 [Диаграмма контейнеров](https://github.com/Wardar-py/architecture-warmhouse/blob/warmhouse/diagrams/ms_c4_container.puml)
@@ -98,60 +96,14 @@ Pusher, в свою очередь, отвечает за рассылку ув�
 
 Там находится приложение-монолит для работы с датчиками температуры. В README.md описано как запустить решение.
 
-Вам нужно:
 
-1) сделать простое приложение temperature-api на любом удобном для вас языке программирования, которое при запросе /temperature?location= будет отдавать рандомное значение температуры.
-
-Locations - название комнаты, sensorId - идентификатор названия комнаты
-
-```
-	// If no location is provided, use a default based on sensor ID
-	if location == "" {
-		switch sensorID {
-		case "1":
-			location = "Living Room"
-		case "2":
-			location = "Bedroom"
-		case "3":
-			location = "Kitchen"
-		default:
-			location = "Unknown"
-		}
-	}
-
-	// If no sensor ID is provided, generate one based on location
-	if sensorID == "" {
-		switch location {
-		case "Living Room":
-			sensorID = "1"
-		case "Bedroom":
-			sensorID = "2"
-		case "Kitchen":
-			sensorID = "3"
-		default:
-			sensorID = "0"
-		}
-	}
-```
-
-2) Приложение следует упаковать в Docker и добавить в docker-compose. Порт по умолчанию должен быть 8081
-
-3) Кроме того для smart_home приложения требуется база данных - добавьте в docker-compose файл настройки для запуска postgres с указанием скрипта инициализации ./smart_home/init.sql
-
-Для проверки можно использовать Postman коллекцию smarthome-api.postman_collection.json и вызвать:
-
-- Create Sensor
-- Get All Sensors
-
-Должно при каждом вызове отображаться разное значение температуры
-
-Ревьюер будет проверять точно так же.
-
-
-Задание 6. Разработка MVP
+# Задание 6. Разработка MVP
+Перейдите в apps.
+В docker-compose.yml добавлены ms_gateway, ms_auth, ms_device, ms_device_manager, ms_pusher, ms_telemetry также запуск postgres баз данных, clickhouse, kafka.
+Добавлен clickhouse-init.sql
+Каждый микросервис имеет Dockerfile.
 Внедрена микросервисная архитектура в соответствии с диаграммами из заданий 3 и 4.
-Приложения размещены в модуле warmhouse, каждый микросервис имеет Dockerfile.
-Реализован файл docker-compose для запуска всех микросервисов, их баз данных и Kafka.
+
 План интеграции с существующим монолитным приложением:
 1. Микросервис ms_device: Реализует эндпоинты, совместимые с эндпоинтами монолита (sensors.go).
 На начальном этапе для переноса данных ms_device и smart_home могут использовать общую базу данных.
